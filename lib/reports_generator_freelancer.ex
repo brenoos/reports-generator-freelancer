@@ -43,7 +43,7 @@ defmodule ReportsGeneratorFreelancer do
   def build(file_name) do
     file_name
     |> Parser.parse_file()
-    |> build_monthly_hours()
+    |> build_yearly_hours()
   end
 
   defp build_all_hours(parsed_file) do
@@ -57,6 +57,13 @@ defmodule ReportsGeneratorFreelancer do
     parsed_file
     |> Enum.reduce(report_acc_month(), fn line, acc ->
       sum_monthly_hours(line, acc)
+    end)
+  end
+
+  defp build_yearly_hours(parsed_file) do
+    parsed_file
+    |> Enum.reduce(report_acc_year(), fn line, acc ->
+      sum_yearly_hours(line, acc)
     end)
   end
 
@@ -80,5 +87,9 @@ defmodule ReportsGeneratorFreelancer do
 
   defp sum_monthly_hours([name, hours, _day, month, _year], acc) do
     %{acc | name => %{acc[name] | @months_map[month] => acc[name][@months_map[month]] + hours}}
+  end
+
+  defp sum_yearly_hours([name, hours, _day, _month, year], acc) do
+    %{acc | name => %{acc[name] | year => acc[name][year] + hours}}
   end
 end
