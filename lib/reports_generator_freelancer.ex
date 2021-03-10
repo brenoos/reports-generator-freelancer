@@ -7,7 +7,11 @@ defmodule ReportsGeneratorFreelancer do
     "Giuliano",
     "Cleiton",
     "Jakeliny",
-    "Joseph"
+    "Joseph",
+    "Rafael",
+    "Diego",
+    "Vinicius",
+    "Danilo"
   ]
 
   @months_map %{
@@ -41,9 +45,16 @@ defmodule ReportsGeneratorFreelancer do
   ]
 
   def build(file_name) do
-    file_name
-    |> Parser.parse_file()
-    |> build_yearly_hours()
+    parsed_file = Parser.parse_file(file_name)
+    all_hours = build_all_hours(parsed_file)
+    hours_per_month = build_monthly_hours(parsed_file)
+    hours_per_year = build_yearly_hours(parsed_file)
+
+    %{
+      "all_hours" => all_hours,
+      "hours_per_month" => hours_per_month,
+      "hours_per_year" => hours_per_year
+    }
   end
 
   defp build_all_hours(parsed_file) do
