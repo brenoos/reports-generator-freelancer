@@ -25,3 +25,5 @@ reports_generator_freelancer-*.tar
 
 # Temporary files for e.g. tests
 /tmp
+
+.elixir_linter
