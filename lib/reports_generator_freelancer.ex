@@ -1,18 +1,84 @@
 defmodule ReportsGeneratorFreelancer do
-  @moduledoc """
-  Documentation for `ReportsGeneratorFreelancer`.
-  """
+  alias ReportsGeneratorFreelancer.Parser
 
-  @doc """
-  Hello world.
+  @developers [
+    "Daniele",
+    "Mayk",
+    "Giuliano",
+    "Cleiton",
+    "Jakeliny",
+    "Joseph"
+  ]
 
-  ## Examples
+  @months_map %{
+    1 => "Janeiro",
+    2 => "Fevereiro",
+    3 => "Março",
+    4 => "Abril",
+    5 => "Maio",
+    6 => "Junho",
+    7 => "Julho",
+    8 => "Agosto",
+    9 => "Setembro",
+    10 => "Outubro",
+    11 => "Novembro",
+    12 => "Dezembro"
+  }
 
-      iex> ReportsGeneratorFreelancer.hello()
-      :world
+  @months_list [
+    "Janeiro",
+    "Fevereiro",
+    "Março",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro"
+  ]
 
-  """
-  def hello do
-    :world
+  def build(file_name) do
+    file_name
+    |> Parser.parse_file()
+    |> build_monthly_hours()
+  end
+
+  defp build_all_hours(parsed_file) do
+    parsed_file
+    |> Enum.reduce(report_acc_day(), fn line, acc ->
+      sum_all_hours(line, acc)
+    end)
+  end
+
+  defp build_monthly_hours(parsed_file) do
+    parsed_file
+    |> Enum.reduce(report_acc_month(), fn line, acc ->
+      sum_monthly_hours(line, acc)
+    end)
+  end
+
+  defp report_acc_day() do
+    Enum.into(@developers, %{}, &{&1, 0})
+  end
+
+  defp report_acc_month() do
+    months = Enum.into(@months_list, %{}, &{&1, 0})
+    Enum.into(@developers, %{}, &{&1, months})
+  end
+
+  defp report_acc_year() do
+    months = Enum.into(2016..2020, %{}, &{&1, 0})
+    Enum.into(@developers, %{}, &{&1, months})
+  end
+
+  defp sum_all_hours([name, hours, _day, _month, _year], acc) do
+    %{acc | name => acc[name] + hours}
+  end
+
+  defp sum_monthly_hours([name, hours, _day, month, _year], acc) do
+    %{acc | name => %{acc[name] | @months_map[month] => acc[name][@months_map[month]] + hours}}
   end
 end
